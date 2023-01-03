@@ -4,10 +4,11 @@ const {
   ipcMain,
   Menu,
   globalShortcut,
+  shell,
 } = require("electron");
 const os = require("os");
 const path = require("path");
-const fs = require("fileServer");
+const fs = require("fs");
 require("dotenv").config();
 let destination = path.join(os.homedir(), "audios");
 
@@ -43,7 +44,12 @@ function createWindow() {
       label: app.name,
       submenu: [
         { label: "Preferences", click: () => {} },
-        { label: "Open destination folder", click: () => {} },
+        {
+          label: "Open destination folder",
+          click: () => {
+            shell.openPath(destination);
+          },
+        },
       ],
     },
     { label: "File", submenu: [isMac ? { role: "close" } : { role: "quit" }] },
@@ -92,6 +98,6 @@ ipcMain.on("open_new_window", () => {
 });
 
 ipcMain.on("save_buffer", (e, buffer) => {
-  const filePath = path.join(destination, Date.now());
+  const filePath = path.join(destination, `${Date.now()}`);
   fs.writeFileSync(`${filePath}.webm`, buffer);
 });
