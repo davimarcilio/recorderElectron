@@ -16,8 +16,22 @@
       <div class="group">
         <label for="dest-path">Destination path:</label>
         <input id="dest-path" name="dest-path" type="text" />
-        <button onclick="">Choose</button>
+        <button onclick="choose()">Choose</button>
       </div>
     </div>
+    <script>
+      const { ipcRenderer } = require("electron");
+      const destPath = document.querySelector("#dest-path");
+
+      ipcRenderer.on("dest-path-update", (e, destination) => {
+        destPath.value = destination;
+      });
+
+      function choose() {
+        ipcRenderer.invoke("show-dialog").then((destination) => {
+          destPath.value = destination;
+        });
+      }
+    </script>
   </body>
 </html>
