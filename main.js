@@ -18,6 +18,30 @@ const isDev =
     : false;
 
 const isMac = process.platform === "darwin" ? true : false;
+
+function createPreferenceWindow() {
+  const preferenceWindow = new BrowserWindow({
+    width: isDev ? 950 : 500,
+    height: isDev ? 950 : 150,
+    resizable: isDev ? true : false,
+    backgroundColor: "#234",
+    show: false,
+    icon: path.join(__dirname, "./assets/icons/icon.png"),
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+    },
+  });
+
+  preferenceWindow.loadFile("./src/preferences/index.html");
+  if (isDev) {
+    preferenceWindow.webContents.openDevTools();
+  }
+  preferenceWindow.once("ready-to-show", () => {
+    preferenceWindow.show();
+  });
+}
+
 function createWindow() {
   const win = new BrowserWindow({
     width: isDev ? 950 : 500,
@@ -37,13 +61,17 @@ function createWindow() {
   }
   win.once("ready-to-show", () => {
     win.show();
-    win.webContents.send("cpu_data", os.cpus()[0].model);
   });
   const menuTemplate = [
     {
       label: app.name,
       submenu: [
-        { label: "Preferences", click: () => {} },
+        {
+          label: "Preferences",
+          click: () => {
+            createPreferenceWindow();
+          },
+        },
         {
           label: "Open destination folder",
           click: () => {
